@@ -1,0 +1,133 @@
+
+
+export class SQL {
+
+    private static instance: SQL
+    public static getInstance(): SQL {
+        if (!SQL.instance) {
+            SQL.instance = new SQL()
+        }
+        return SQL.instance
+    }
+
+
+    getInvoicingTotvs(data: string) {
+
+        return `SELECT DISTINCT
+        CNE.R_E_C_N_O_ as ID ,
+        CNE_CONTRA AS 'CONTRATO', --NUMERO DO CONTRATO
+        CNE_NUMMED AS 'N_MED', --NUMERO DA MEDICAO
+        CNE_XDTLEI AS 'DT_LEITURA', --DATA DA LEITURA
+        CNE_PEDIDO AS 'N_PEDIDO', --NUMERO DO PEDIDO DE VENDA
+        CNE_PRODUT AS 'CODIGO', --CODIGO DO PRODUTO
+        CNE_XDESCR AS 'DESC', --DESCRICAO DO PRODUTO
+        CNE_XSERIA AS 'SERIE', --SERIE DO EQUIPAMENTO
+        CNE_XTPDES AS 'TIPO', --TIPODE IMPRESSÃO
+        replace(CNE_XNUM2,',','.') AS 'CONT_ANTERIOR', --CONTADOR ANTERIOR
+        replace(CNE_XNUM,',','.')AS 'CONT_ATUAL', --CONTADOR ATUAL
+        replace(CNE_QUANT,',','.') AS 'CONSUMO', --DIFERENÇA ENTRE O CONTADOR ATUAL E ANTERIOR, CONSUMO DE IMPRESSÕES E COPIAS DO CLIENTE
+        CNE_VLUNIT AS 'VLR_UNITARIO', --VALOR UNITARO
+        CNE_VLTOT AS 'VLR_TOTAL' --VALOR TOTAL FROM CNE010 CNEWHERE D_E_L_E_T_ =''
+        FROM CNE010 CNE
+        WHERE D_E_L_E_T_ ='' and CNE_CONTRA in(
+        SELECT DISTINCT
+        CN9_NUMERO
+        FROM CN9010 CN9
+        INNER JOIN CNB010 CNB
+        ON CN9_NUMERO = CNB_CONTRA AND CN9_REVISA = CNB.CNB_REVISA AND CNB.D_E_L_E_T_ =''
+        AND CNB.D_E_L_E_T_ =''
+        INNER JOIN SA1010 A1
+        ON CN9_CLIENT = A1_COD AND CN9_LOJACL = A1_LOJA AND A1.D_E_L_E_T_ =''
+        INNER JOIN SB1010 B1
+        ON CNB_PRODUT = B1_COD AND B1.B1_FILIAL ='01' AND B1.D_E_L_E_T_ =''
+        INNER JOIN SBM010 BM
+        ON B1_GRUPO = BM_GRUPO AND BM.BM_FILIAL ='01' AND BM.D_E_L_E_T_ =''
+        WHERE CN9.D_E_L_E_T_ =''
+        AND CN9_SITUAC IN ('05')) and CNE_XDTLEI BETWEEN '${data}' and getDate() ORDER BY CNE.R_E_C_N_O_`
+        // AND CN9_SITUAC IN ('05')) and year(CNE_XDTLEI)>=2021 ORDER BY  CNE.R_E_C_N_O_`
+    }
+
+
+    getInvoicingTotvs_old() {
+        return `SELECT DISTINCT
+        R_E_C_N_O_ as ID ,
+        CNE_CONTRA AS 'CONTRATO', --NUMERO DO CONTRATO
+        CNE_NUMMED AS 'N_MED', --NUMERO DA MEDICAO
+        CNE_XDTLEI AS 'DT_LEITURA', --DATA DA LEITURA
+        CNE_PEDIDO AS 'N_PEDIDO', --NUMERO DO PEDIDO DE VENDA
+        CNE_PRODUT AS 'CODIGO', --CODIGO DO PRODUTO
+        CNE_XDESCR AS 'DESC', --DESCRICAO DO PRODUTO
+        CNE_XSERIA AS 'SERIE', --SERIE DO EQUIPAMENTO
+        CNE_XTPDES AS 'TIPO', --TIPODE IMPRESSÃO
+        replace(CNE_XNUM2,',','.') AS 'CONT_ANTERIOR', --CONTADOR ANTERIOR
+        replace(CNE_XNUM,',','.')AS 'CONT_ATUAL', --CONTADOR ATUAL
+        replace(CNE_QUANT,',','.') AS 'CONSUMO', --DIFERENÇA ENTRE O CONTADOR ATUAL E ANTERIOR, CONSUMO DE IMPRESSÕES E COPIAS DO CLIENTE
+        CNE_VLUNIT AS 'VLR_UNITARIO', --VALOR UNITARO
+        CNE_VLTOT AS 'VLR_TOTAL' --VALOR TOTAL FROM CNE010 CNEWHERE D_E_L_E_T_ =''
+        FROM CNE010 CNE
+        WHERE D_E_L_E_T_ ='' and CNE_CONTRA in(
+        SELECT DISTINCT
+        CN9_NUMERO
+        FROM CN9010 CN9
+        INNER JOIN CNB010 CNB
+        ON CN9_NUMERO = CNB_CONTRA AND CN9_REVISA = CNB.CNB_REVISA AND CNB.D_E_L_E_T_ =''
+        AND CNB.D_E_L_E_T_ =''
+        INNER JOIN SA1010 A1
+        ON CN9_CLIENT = A1_COD AND CN9_LOJACL = A1_LOJA AND A1.D_E_L_E_T_ =''
+        INNER JOIN SB1010 B1
+        ON CNB_PRODUT = B1_COD AND B1.B1_FILIAL ='01' AND B1.D_E_L_E_T_ =''
+        INNER JOIN SBM010 BM
+        ON B1_GRUPO = BM_GRUPO AND BM.BM_FILIAL ='01' AND BM.D_E_L_E_T_ =''
+        WHERE CN9.D_E_L_E_T_ =''
+        AND CN9_SITUAC IN ('05') and year (CNE_XDTLEI)>=2021
+        )`
+    }
+
+
+
+
+    getContractTotvs(id: string) {
+        return `SELECT DISTINCT
+        CNB.R_E_C_N_O_ AS "ID",
+        CN9_NUMERO AS "CONTRATO",
+        CN9_CLIENT AS CLIENTE,
+        --A1_LOJA AS LOJA,
+        A1_NOME AS "CLIENTE",
+        A1_CGC AS "CNPJ",
+        CASE CN9_SITUAC
+        WHEN '01' THEN 'CANCELADO'
+        WHEN '02' THEN 'EM ELABORAÇÃO'
+        WHEN '03' THEN 'EMITIDO'
+        WHEN '04' THEN 'EM APROVAÇÃO'
+        WHEN '05' THEN 'VIGENTE'
+        WHEN '10' THEN 'REVISAO'
+        END AS "STATUS_DO_CONTRATO",
+        
+        CNB_PRODUT AS "COD_PRODUTO",
+        CNB_DESCRI AS "DESCRICAO",
+        --BM_DESC AS "DESC. GRUPO",
+        CNB_XSERIA AS "NUM_SERIE"
+        
+        FROM CN9010 CN9
+        INNER JOIN CNB010 CNB
+        ON CN9_NUMERO = CNB_CONTRA AND CN9_REVISA = CNB.CNB_REVISA AND CNB.D_E_L_E_T_ =''
+        AND CNB.D_E_L_E_T_ =''
+        
+        INNER JOIN SA1010 A1
+        ON CN9_CLIENT = A1_COD AND CN9_LOJACL = A1_LOJA AND A1.D_E_L_E_T_ =''
+        
+        INNER JOIN SB1010 B1
+        ON CNB_PRODUT = B1_COD AND B1.B1_FILIAL ='01' AND B1.D_E_L_E_T_ =''
+        
+        INNER JOIN SBM010 BM
+        ON B1_GRUPO = BM_GRUPO AND BM.BM_FILIAL ='01' AND BM.D_E_L_E_T_ =''
+        
+        WHERE CN9.D_E_L_E_T_ =''
+        AND CN9_SITUAC IN ('05') and CNB.R_E_C_N_O_ > '${id}'
+        --FILTRA POR NUMERO DE CONTRATO
+        --AND CN9_NUMERO LIKE '%000000000000193%'
+        
+        ORDER BY CN9_NUMERO`
+    }
+
+}

@@ -1,0 +1,18 @@
+{
+    "sonarlint.connectedMode.connections.sonarqube": [{
+        "connectionId": "conecthus",
+        "serverUrl": "https://sonarqube.conecthus.org.br",
+        "token": "e9d0f717fff01b93fd1279184dc9ec5efc1a2d4d",
+        "disableNotifications": false
+    }, ],
+    "sonarlint.output.showVerboseLogs": true,
+    "sonarlint.output.showAnalyzerLogs": true,
+    "sonarlint.disableTelemetry": true,
+    "sonarlint.connectedMode.project": {
+        "connectionId": "conecthus",
+        "projectKey": "amazon-copy_integracao-mps_v1_backend_AYCVjJzTFDIbL6R1StnZ"
+    },
+    "java.project.sourcePaths": [
+        "src/common"
+    ]
+}
