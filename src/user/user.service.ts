@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
+import { sendMail } from 'src/common/email';
 import { SortingType, ValidType } from 'src/common/Enums';
 import { hash } from 'src/common/hash';
 
@@ -12,9 +13,11 @@ import { Validations } from 'src/common/validations';
 import { ProfileService } from 'src/profile/profile.service';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
+import { FilterMail } from './dto/filter.mail';
 import { FilterUser } from './dto/filter.user';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { CheckCpf } from '../common/validate.cpf';
 
 @Injectable()
 export class UserService {
@@ -25,8 +28,12 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const { user_password, user_name, user_email, user_profile_id } =
+    const { user_password, user_name, user_email, user_profile_id, user_cpf } =
       createUserDto;
+
+    if (!CheckCpf.getInstance().isCpf(user_cpf)) {
+      throw new BadRequestException(`O cpf informado é inválido!!`);
+    }
 
     const currentUser = this.userRepository.create(createUserDto);
 
@@ -50,7 +57,6 @@ export class UserService {
 
     const emailIsRegistered = await this.findByEmail(user_email);
 
-    
     if (emailIsRegistered) {
       throw new BadRequestException(`email already registered`);
     }
@@ -66,12 +72,12 @@ export class UserService {
     currentUser.user_first_access = true;
     currentUser.create_at = new Date();
     currentUser.update_at = new Date();
+    currentUser.user_cpf = user_cpf.replace(/[^\d]+/g, '');
 
     return this.userRepository.save(currentUser);
   }
 
   async findByEmail(userEmail: string): Promise<User> {
-    
     return this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.profile', 'profile')
@@ -145,6 +151,15 @@ export class UserService {
     );
   }
 
+  async findByCpf(cpf: string) {
+    return this.userRepository.findOne({
+      where: {
+        user_cpf: cpf,
+        is_active: true,
+      },
+    });
+  }
+
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const isRegistered = await this.findById(id);
 
@@ -152,7 +167,7 @@ export class UserService {
       throw new NotFoundException(`User not found`);
     }
 
-    const { user_name, user_email } = updateUserDto;
+    const { user_name, user_email, user_cpf } = updateUserDto;
 
     const currentUser = await this.userRepository.preload({
       user_id: id,
@@ -177,6 +192,14 @@ export class UserService {
       );
 
       currentUser.user_email = user_email;
+    }
+
+    if (user_cpf) {
+      if (!CheckCpf.getInstance().isCpf(user_cpf)) {
+        throw new BadRequestException(`O cpf informado é inválido!!`);
+      }
+
+      currentUser.user_cpf = user_cpf.replace(/[^\d]+/g, '');
     }
 
     return this.userRepository.save(currentUser);
@@ -208,5 +231,22 @@ export class UserService {
     user.user_refresh_token = refresh_token;
 
     await this.userRepository.save(user);
+  }
+
+  async sendMail(filterMail: FilterMail) {
+    const { message } = filterMail;
+
+    sendMail(message);
+  }
+
+  async changePassword(cpf: string, password: string) {
+    const user = await this.findByCpf(cpf);
+    if (!user) {
+      throw new NotFoundException(`User not found`);
+    }
+
+    user.user_password = await hash(password);
+
+    this.userRepository.save(user);
   }
 }

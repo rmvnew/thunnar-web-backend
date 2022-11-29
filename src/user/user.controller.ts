@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Put, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -10,31 +21,33 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { PublicRoute } from 'src/common/decorators/public_route.decorator';
 import { PermissionGuard } from 'src/auth/shared/guards/permission.guard';
 import AccessProfile from 'src/auth/enums/permission.type';
+import { FilterMail } from './dto/filter.mail';
 
-
-@ApiTags("User")
+@ApiTags('User')
 @Controller('user')
 @ApiBearerAuth()
-
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
   // @PublicRoute()
   @UseGuards(PermissionGuard(AccessProfile.ADMIN))
-  async create(
-    @Body() createUserDto: CreateUserDto) {
+  async create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
   @Get()
   @UseGuards(PermissionGuard(AccessProfile.USER_AND_ADMIN))
-  async findAll(
-    @Query() filter: FilterUser):Promise<Pagination<User>> {
-
-    filter.route = getUserPath()
+  async findAll(@Query() filter: FilterUser): Promise<Pagination<User>> {
+    filter.route = getUserPath();
 
     return this.userService.findAll(filter);
+  }
+
+  @Post('/mail')
+  @UseGuards(PermissionGuard(AccessProfile.USER_AND_ADMIN))
+  async sendMail(@Query() filterMail: FilterMail) {
+    this.userService.sendMail(filterMail);
   }
 
   @Get(':id')
@@ -46,8 +59,9 @@ export class UserController {
   @Put(':id')
   @UseGuards(PermissionGuard(AccessProfile.ADMIN))
   async update(
-    @Param('id') id: string, 
-    @Body() updateUserDto: UpdateUserDto): Promise<User> {
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<User> {
     return this.userService.update(+id, updateUserDto);
   }
 
@@ -55,5 +69,11 @@ export class UserController {
   @UseGuards(PermissionGuard(AccessProfile.ADMIN))
   async remove(@Param('id') id: string): Promise<User> {
     return this.userService.changeStatus(+id);
+  }
+
+  @Patch('/changePassword/:cpf/:pass')
+  @UseGuards(PermissionGuard(AccessProfile.ADMIN))
+  async changePassword(@Param('cpf') cpf: string, @Param('pass') pass: string) {
+    this.userService.changePassword(cpf, pass);
   }
 }

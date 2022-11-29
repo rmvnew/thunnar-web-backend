@@ -11,5 +11,8 @@ export class CreateUserDto {
     user_password: string
 
     @ApiProperty()
+    user_cpf: string;
+
+    @ApiProperty()
     user_profile_id: number
 }

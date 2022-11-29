@@ -43,7 +43,6 @@ export class AuthService {
 
         const userSaved = await this.userService.findByEmail(user.email);
         
-        console.log('UserSaved: ',userSaved);
         
         if (userSaved.is_active === false) {
             throw new BadRequestException(`Usuário ${userSaved.user_name} não está ativo no sistema!`)

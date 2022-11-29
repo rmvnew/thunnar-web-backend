@@ -20,11 +20,14 @@ export class User {
   @Column()
   user_name: string;
 
-  @Column()
+  @Column({ unique: true })
   user_email: string;
 
   @Column()
   user_password: string;
+
+  @Column()
+  user_cpf: string;
 
   @Column({ nullable: true })
   user_refresh_token: string;

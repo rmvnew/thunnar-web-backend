@@ -8,5 +8,8 @@ export class UpdateUserDto {
   user_email: string;
 
   @ApiProperty()
+  user_cpf: string;
+
+  @ApiProperty()
   user_profile_id: number;
 }
