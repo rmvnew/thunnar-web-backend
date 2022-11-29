@@ -1,14 +1,16 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, UseGuards } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { PublicRoute } from 'src/common/decorators/public_route.decorator';
+import { PermissionGuard } from 'src/auth/shared/guards/permission.guard';
+import AccessProfile from 'src/auth/enums/permission.type';
 
 @ApiTags("Profile")
 @Controller('profile')
 @ApiBearerAuth()
-@PublicRoute()
+@UseGuards(PermissionGuard(AccessProfile.ADMIN))
 
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}

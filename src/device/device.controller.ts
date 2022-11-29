@@ -1,11 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import AccessProfile from 'src/auth/enums/permission.type';
+import { PermissionGuard } from 'src/auth/shared/guards/permission.guard';
 import { DeviceService } from './device.service';
 import { CreateDeviceDto } from './dto/create-device.dto';
 import { UpdateDeviceDto } from './dto/update-device.dto';
 
 @ApiTags("Device")
 @Controller('device')
+@ApiBearerAuth()
+@UseGuards(PermissionGuard(AccessProfile.USER_AND_ADMIN))
+
 export class DeviceController {
   constructor(private readonly deviceService: DeviceService) {}
 

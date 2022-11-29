@@ -1,13 +1,17 @@
 import { FilterProduct } from './dto/filter.product';
-import { Controller, Get, Post, Body, Param, Delete, Query, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Query, Put, UseGuards } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { getProductPath } from 'src/common/routes.path';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { PermissionGuard } from 'src/auth/shared/guards/permission.guard';
+import AccessProfile from 'src/auth/enums/permission.type';
 
 @ApiTags("Product")
 @Controller('product')
+@ApiBearerAuth()
+@UseGuards(PermissionGuard(AccessProfile.USER_AND_ADMIN))
 
 export class ProductController {
   constructor(private readonly productService: ProductService) { }

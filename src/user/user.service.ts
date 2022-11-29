@@ -76,7 +76,7 @@ export class UserService {
 
     return this.userRepository.save(currentUser);
   }
-
+ 
   async findByEmail(userEmail: string): Promise<User> {
     return this.userRepository
       .createQueryBuilder('user')

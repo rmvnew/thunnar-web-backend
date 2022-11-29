@@ -6,14 +6,21 @@ import {
   Param,
   Delete,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { TechnicianService } from './technician.service';
 import { CreateTechnicianDto } from './dto/create-technician.dto';
 import { UpdateTechnicianDto } from './dto/update-technician.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { PermissionGuard } from 'src/auth/shared/guards/permission.guard';
+import AccessProfile from 'src/auth/enums/permission.type';
 
 @ApiTags('Technician')
 @Controller('technician')
+@ApiBearerAuth()
+@UseGuards(PermissionGuard(AccessProfile.USER_AND_ADMIN))
+
+
 export class TechnicianController {
   constructor(private readonly technicianService: TechnicianService) {}
 

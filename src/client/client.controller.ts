@@ -6,14 +6,20 @@ import {
   Param,
   Delete,
   Put,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import AccessProfile from 'src/auth/enums/permission.type';
+import { PermissionGuard } from 'src/auth/shared/guards/permission.guard';
 import { ClientService } from './client.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 
 @ApiTags('Client')
 @Controller('client')
+@ApiBearerAuth()
+@UseGuards(PermissionGuard(AccessProfile.USER_AND_ADMIN))
+
 export class ClientController {
   constructor(private readonly clientService: ClientService) {}
 
