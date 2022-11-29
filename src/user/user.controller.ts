@@ -15,19 +15,20 @@ import AccessProfile from 'src/auth/enums/permission.type';
 @ApiTags("User")
 @Controller('user')
 @ApiBearerAuth()
-@PublicRoute()
+
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  @PublicRoute()
-  // @UseGuards(PermissionGuard(AccessProfile.ADMIN))
+  // @PublicRoute()
+  @UseGuards(PermissionGuard(AccessProfile.ADMIN))
   async create(
     @Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
   @Get()
+  @UseGuards(PermissionGuard(AccessProfile.USER_AND_ADMIN))
   async findAll(
     @Query() filter: FilterUser):Promise<Pagination<User>> {
 
@@ -37,11 +38,13 @@ export class UserController {
   }
 
   @Get(':id')
+  @UseGuards(PermissionGuard(AccessProfile.USER_AND_ADMIN))
   async findOne(@Param('id') id: string): Promise<User> {
     return this.userService.findById(+id);
   }
 
   @Put(':id')
+  @UseGuards(PermissionGuard(AccessProfile.ADMIN))
   async update(
     @Param('id') id: string, 
     @Body() updateUserDto: UpdateUserDto): Promise<User> {
@@ -49,6 +52,7 @@ export class UserController {
   }
 
   @Delete(':id')
+  @UseGuards(PermissionGuard(AccessProfile.ADMIN))
   async remove(@Param('id') id: string): Promise<User> {
     return this.userService.changeStatus(+id);
   }
