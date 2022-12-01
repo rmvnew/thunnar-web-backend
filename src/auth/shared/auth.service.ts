@@ -42,8 +42,8 @@ export class AuthService {
     async login(user: LoginDTO) {
 
         const userSaved = await this.userService.findByEmail(user.email);
-        
-        
+
+
         if (userSaved.is_active === false) {
             throw new BadRequestException(`Usuário ${userSaved.user_name} não está ativo no sistema!`)
         }
@@ -66,7 +66,10 @@ export class AuthService {
     }
 
     async refreshToken(id: number, refreshToken: string) {
+
         const user = await this.userService.findById(id)
+
+        console.log('User: ', user)
 
         if (!user) {
             throw new HttpException('User with this enrollment does not exist', HttpStatus.NOT_FOUND);
@@ -137,6 +140,31 @@ export class AuthService {
             refresh_token: refresh_token
         }
     }
+
+
+    async validateToken(id: number, token: string) {
+
+
+        const user = await this.userService.findById(id)
+
+
+        if (!user) {
+            throw new HttpException('User with this enrollment does not exist', HttpStatus.NOT_FOUND);
+        }
+
+        if (!user.user_refresh_token) {
+            throw new HttpException('Refresh token does not exist on this user', HttpStatus.NOT_FOUND);
+        }
+
+        return {
+            access_token: token,
+            refresh_token: user.user_refresh_token,
+            name: user.user_name,
+            profile: user.profile.profile_name,
+            expires_in: this.configService.get('auth.refresh_token_expires_in')
+        }
+    }
+
 
 
 }

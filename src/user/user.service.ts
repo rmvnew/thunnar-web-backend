@@ -145,6 +145,7 @@ export class UserService {
     return (
       this.userRepository
         .createQueryBuilder('inf')
+        .leftJoinAndSelect('inf.profile','profile')
         .where('inf.user_id = :user_id', { user_id: id })
         // .andWhere('inf.is_active = true')
         .getOne()
@@ -220,6 +221,7 @@ export class UserService {
   }
 
   async updateRefreshToken(id: number, refresh_token: string) {
+    
     Validations.getInstance().validateWithRegex(`${id}`, ValidType.IS_NUMBER);
 
     const user = await this.findById(id);

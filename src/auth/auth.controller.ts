@@ -31,11 +31,24 @@ export class AuthController {
         return this.authService.login(auth)
     }
 
+
+
     @Post('/logout')
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
     async logout(@Request() payload: any) {
+
         return this.authService.removeRefreshToken(payload.user.sub);
+    }
+    
+    @Post('/validate')
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    async validate(@Request() payload: any) {
+
+        // console.log(payload.headers.authorization.substring(7));
+
+        return this.authService.validateToken(payload.user.sub,payload.headers.authorization.substring(7))
     }
 
     @Post('/refresh_token')
@@ -47,5 +60,7 @@ export class AuthController {
         return this.authService.refreshToken(payload.user.id, payload.user.refresh_token);
     }
 
-    
+
+
+
 }
