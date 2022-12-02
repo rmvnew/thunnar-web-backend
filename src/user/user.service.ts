@@ -61,6 +61,10 @@ export class UserService {
       throw new BadRequestException(`email already registered`);
     }
 
+    if(!user_profile_id){
+      throw new BadRequestException(`Profile not found`)
+    }
+
     const profile = await this.profileService.findByid(user_profile_id);
     if (!profile) {
       throw new NotFoundException(`Perfil não encontrado`);
@@ -97,7 +101,9 @@ export class UserService {
   async findAll(filter: FilterUser): Promise<Pagination<User>> {
     const { sort, orderBy, user_name } = filter;
 
-    const queryBuilder = this.userRepository.createQueryBuilder('user');
+    const queryBuilder = this.userRepository.createQueryBuilder('user')
+    .leftJoinAndSelect('user.profile','profile')
+    
 
     if (user_name) {
       queryBuilder.where(`user.user_name like :user_name`, {
