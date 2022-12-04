@@ -1,5 +1,6 @@
 import { Category } from "src/category/entities/category.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Invoice } from "src/invoice/entities/invoice.entity";
+import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 
 @Entity("tb_product")
@@ -18,7 +19,7 @@ export class Product {
     product_code: string
 
     @Column()
-    product_location:string
+    product_location: string
 
     @Column()
     product_quantity: number
@@ -27,20 +28,31 @@ export class Product {
     product_quantity_minimal: number
 
     @Column({ nullable: true })
-    invoice_number: number
-
-    @Column({ nullable: true })
     product_price: number
 
     @Column({ nullable: true })
     product_price_buy: number
 
     @Column()
-    product_categoty_id:number
+    product_categoty_id: number
 
-    @ManyToOne(()=> Category,(category)=> category.products)
-    @JoinColumn({name:"product_categoty_id"})
-    category:Category
+    @ManyToOne(() => Category, (category) => category.products)
+    @JoinColumn({ name: "product_categoty_id" })
+    category: Category
+
+    @ManyToMany(() => Invoice, { cascade: true, nullable: true })
+    @JoinTable({
+        name: 'products_in_invoice',
+        joinColumn: {
+            name: 'product_id',
+            referencedColumnName: 'product_id',
+        },
+        inverseJoinColumn: {
+            name: 'invoice_id',
+            referencedColumnName: 'invoice_id',
+        },
+    })
+    invoce?: Invoice;
 
     @Column()
     is_active: boolean

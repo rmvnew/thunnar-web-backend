@@ -7,6 +7,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { Brackets, Repository } from 'typeorm';
 import { SortingType } from 'src/common/Enums';
 import { paginate } from 'nestjs-typeorm-paginate';
+import { InvoiceService } from '../invoice/invoice.service';
 
 @Injectable()
 export class ProductService {
@@ -14,14 +15,24 @@ export class ProductService {
 
   constructor(
     @InjectRepository(Product)
-    private readonly productRepository: Repository<Product>
+    private readonly productRepository: Repository<Product>,
+    private readonly invoiceService: InvoiceService
   ) { }
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
 
-    const { product_name, product_location } = createProductDto
+    const { product_name, product_location, invoice_id } = createProductDto
+
 
     const createProduct = this.productRepository.create(createProductDto)
+
+    if (invoice_id) {
+      const currentInvoice = await this.invoiceService.findById(invoice_id)
+      if (!currentInvoice) {
+        throw new NotFoundException(`Invoice not found`)
+      }
+      createProduct.invoce = currentInvoice
+    }
 
     createProduct.product_name = product_name.toUpperCase()
     createProduct.product_location = product_location.toUpperCase()
@@ -46,7 +57,7 @@ export class ProductService {
 
       queryBuilder
         .where('prod.product_name like :product_name', { product_name: `%${search}%` })
-        .orWhere('prod.product_barcode like :product_barcode',{product_barcode: `%${search}%`})
+        .orWhere('prod.product_barcode like :product_barcode', { product_barcode: `%${search}%` })
 
     }
 

@@ -19,6 +19,7 @@ import { ProductModule } from './product/product.module';
 import { SaleModule } from './sale/sale.module';
 import { ServiceOrderModule } from './service_order/service_order.module';
 import { TechnicianModule } from './technician/technician.module';
+import { InvoiceModule } from './invoice/invoice.module';
 
 
 
@@ -49,7 +50,8 @@ import { TechnicianModule } from './technician/technician.module';
     ProductModule,
     SaleModule,
     ServiceOrderModule,
-    TechnicianModule
+    TechnicianModule,
+    InvoiceModule
     
   ],
   controllers: [],
