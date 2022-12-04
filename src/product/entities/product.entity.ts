@@ -35,9 +35,6 @@ export class Product {
     @Column({ nullable: true })
     product_price_buy: number
 
-    @Column({ nullable: true })
-    product_price_sell: number
-
     @Column()
     product_categoty_id:number
 

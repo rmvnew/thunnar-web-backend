@@ -35,7 +35,6 @@ export class CreateProductDto {
     @ApiProperty({ required: false })
     product_price_buy: number
 
-    @ApiProperty({ required: false })
-    product_price_sell: number
+    
 
 }

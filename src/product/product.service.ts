@@ -39,15 +39,15 @@ export class ProductService {
   async findAll(filter: FilterProduct) {
     const { sort, orderBy, search } = filter;
 
-    const queryBuilder = this.productRepository.createQueryBuilder('prod');
+    const queryBuilder = this.productRepository.createQueryBuilder('prod')
+      .leftJoinAndSelect('prod.category', 'category')
 
     if (search) {
+
       queryBuilder
-        .where(new Brackets(queryBuilderTwo => {
-          queryBuilderTwo
-            .where('prod.product_name like :product_name', { prodct_name: `%${search}%` })
-            .andWhere('prod.product_barcode like :product_barcode', { prodct_barcode: `%${search}%` })
-        }))
+        .where('prod.product_name like :product_name', { product_name: `%${search}%` })
+        .orWhere('prod.product_barcode like :product_barcode',{product_barcode: `%${search}%`})
+
     }
 
     if (orderBy == SortingType.ID) {
@@ -101,7 +101,7 @@ export class ProductService {
       createUpdate.product_name = product_name.toUpperCase()
     }
 
-    if(product_location){
+    if (product_location) {
       createUpdate.product_location = product_location.toUpperCase()
     }
 
