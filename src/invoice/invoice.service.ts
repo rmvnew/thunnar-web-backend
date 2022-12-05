@@ -37,7 +37,7 @@ export class InvoiceService {
     return this.invoiceRepository.find()
   }
 
-  async findById(id: number):Promise<Invoice> {
+  async findById(id: number): Promise<Invoice> {
 
     return this.invoiceRepository.findOne({
       where: {
@@ -47,5 +47,4 @@ export class InvoiceService {
 
   }
 
-  
 }

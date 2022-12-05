@@ -12,22 +12,29 @@ import AccessProfile from 'src/auth/enums/permission.type';
 @UseGuards(PermissionGuard(AccessProfile.USER_AND_ADMIN))
 
 export class InvoiceController {
-  constructor(private readonly invoiceService: InvoiceService) {}
+  constructor(private readonly invoiceService: InvoiceService) { }
 
   @Post()
-  create(@Body() createInvoiceDto: CreateInvoiceDto) {
+  async create(@Body() createInvoiceDto: CreateInvoiceDto) {
     return this.invoiceService.create(createInvoiceDto);
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.invoiceService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.invoiceService.findById(+id);
   }
 
-  
+  @Get('/number/:invoice_number')
+  async findBuNumber(
+    @Param('invoice_number') invoice_number: string
+  ) {
+    return this.invoiceService.findByNumber(invoice_number)
+  }
+
+
 }

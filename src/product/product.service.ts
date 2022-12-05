@@ -46,7 +46,6 @@ export class ProductService {
   }
 
 
-
   async findAll(filter: FilterProduct) {
     const { sort, orderBy, search } = filter;
 
@@ -71,7 +70,7 @@ export class ProductService {
       );
     }
 
-    queryBuilder.andWhere("prod.is_active <> false")
+    queryBuilder.andWhere("prod.is_active <> false") 
 
     const page = await paginate<Product>(queryBuilder, filter);
 
