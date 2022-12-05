@@ -34,10 +34,10 @@ export class Product {
     product_price_buy: number
 
     @Column()
-    product_categoty_id: number
+    product_category_id: number
 
     @ManyToOne(() => Category, (category) => category.products)
-    @JoinColumn({ name: "product_categoty_id" })
+    @JoinColumn({ name: "product_category_id" })
     category: Category
 
     @ManyToMany(() => Invoice, { cascade: true, nullable: true })
@@ -52,7 +52,7 @@ export class Product {
             referencedColumnName: 'invoice_id',
         },
     })
-    invoce?: Invoice[];
+    invoce: Invoice[];
 
     @Column()
     is_active: boolean

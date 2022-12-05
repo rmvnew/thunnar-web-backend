@@ -4,7 +4,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { Brackets, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { SortingType } from 'src/common/Enums';
 import { paginate } from 'nestjs-typeorm-paginate';
 import { InvoiceService } from '../invoice/invoice.service';
@@ -91,28 +91,46 @@ export class ProductService {
   }
 
   async findById(id: number) {
-    return this.productRepository.findOne({
-      where: {
-        product_id: id,
-        is_active: true
-      }
-    })
+    return this.productRepository.query(`select * from tb_product where product_id = ${id}`)
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {
 
-    const { product_name, product_location } = updateProductDto
 
+   console.log(updateProductDto);
+    
+    const { product_name, product_location,invoice_id } = updateProductDto
+    
+    
+    
     const isRegistered = await this.findById(id)
 
+   
+    
+    
     if (!isRegistered) {
       throw new NotFoundException(`Produto não encontrado!`)
     }
+    
+    
 
     const createUpdate = await this.productRepository.preload({
       product_id: id,
       ...updateProductDto
     })
+
+    if (invoice_id) {
+
+      let invoices = []
+      const currentInvoice = await this.invoiceService.findById(invoice_id)
+      
+      if (!currentInvoice) {
+        throw new NotFoundException(`Invoice not found`)
+      }
+
+      invoices.push(currentInvoice)
+      createUpdate.invoce = invoices
+    }
 
 
     if (product_name) {
@@ -123,8 +141,10 @@ export class ProductService {
       createUpdate.product_location = product_location.toUpperCase()
     }
 
-
+    
     return this.productRepository.save(createUpdate)
+
+    
   }
 
 
