@@ -24,14 +24,21 @@ export class ProductService {
     const { product_name, product_location, invoice_id } = createProductDto
 
 
+
+
     const createProduct = this.productRepository.create(createProductDto)
 
     if (invoice_id) {
+
+      let invoices = []
       const currentInvoice = await this.invoiceService.findById(invoice_id)
+      
       if (!currentInvoice) {
         throw new NotFoundException(`Invoice not found`)
       }
-      createProduct.invoce = currentInvoice
+
+      invoices.push(currentInvoice)
+      createProduct.invoce = invoices
     }
 
     createProduct.product_name = product_name.toUpperCase()
@@ -39,6 +46,7 @@ export class ProductService {
 
     createProduct.is_active = true
 
+    
 
     return this.productRepository.save(createProduct)
 
@@ -70,7 +78,7 @@ export class ProductService {
       );
     }
 
-    queryBuilder.andWhere("prod.is_active <> false") 
+    queryBuilder.andWhere("prod.is_active <> false")
 
     const page = await paginate<Product>(queryBuilder, filter);
 

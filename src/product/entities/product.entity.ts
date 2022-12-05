@@ -52,7 +52,7 @@ export class Product {
             referencedColumnName: 'invoice_id',
         },
     })
-    invoce?: Invoice;
+    invoce?: Invoice[];
 
     @Column()
     is_active: boolean
