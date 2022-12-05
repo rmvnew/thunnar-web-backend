@@ -97,8 +97,7 @@ export class ProductService {
   async update(id: number, updateProductDto: UpdateProductDto) {
 
 
-   console.log(updateProductDto);
-    
+       
     const { product_name, product_location,invoice_id } = updateProductDto
     
     
