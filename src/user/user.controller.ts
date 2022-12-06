@@ -72,7 +72,8 @@ export class UserController {
   }
 
   @Patch('/changePassword/:cpf/:pass')
-  @UseGuards(PermissionGuard(AccessProfile.ADMIN))
+  // @UseGuards(PermissionGuard(AccessProfile.ADMIN))
+  @PublicRoute()
   async changePassword(@Param('cpf') cpf: string, @Param('pass') pass: string) {
     this.userService.changePassword(cpf, pass);
   }

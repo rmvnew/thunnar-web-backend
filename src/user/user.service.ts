@@ -159,9 +159,12 @@ export class UserService {
   }
 
   async findByCpf(cpf: string) {
+
+    const currentCpf = cpf.replace(/[^\d]+/g, '');
+
     return this.userRepository.findOne({
       where: {
-        user_cpf: cpf,
+        user_cpf: currentCpf,
         is_active: true,
       },
     });
@@ -248,6 +251,7 @@ export class UserService {
   }
 
   async changePassword(cpf: string, password: string) {
+
     const user = await this.findByCpf(cpf);
     if (!user) {
       throw new NotFoundException(`User not found`);
