@@ -151,7 +151,8 @@ export class ServiceOrderService {
       this.serviceOrderRepository
         .createQueryBuilder('so')
         .leftJoinAndSelect('so.client', 'client')
-        // .leftJoinAndSelect('so.devices', 'devices')
+        .leftJoinAndSelect('so.devices', 'devices')
+        .leftJoinAndSelect('so.technician','technician')
         // .leftJoinAndSelect('devices.parts_and_services', 'parts_and_services')
         .getMany()
     );
