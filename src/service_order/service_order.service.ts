@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { CreateServiceOrderDto } from './dto/create-service_order.dto';
 import { UpdateServiceOrderDto } from './dto/update-service_order.dto';
 import { ServiceOrder } from './entities/service_order.entity';
-import { DeviceStatus, OrderStatus } from '../common/Enums';
+import { DeviceStatus, OrderStatus, SortingType } from '../common/Enums';
 import { Utils } from '../common/Utils';
 import { Device } from 'src/device/entities/device.entity';
 import { PartsAndService } from '../parts_and_services/entities/parts_and_service.entity';
@@ -12,6 +12,8 @@ import { CreatePartsAndServiceDto } from '../parts_and_services/dto/create-parts
 import { ClientService } from '../client/client.service';
 import { TechnicianService } from '../technician/technician.service';
 import { UserService } from 'src/user/user.service';
+import { FilterServiceOrder } from './dto/service-order.filter';
+import { paginate } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class ServiceOrderService {
@@ -25,7 +27,7 @@ export class ServiceOrderService {
     private readonly clientService: ClientService,
     private readonly technicianService: TechnicianService,
     private readonly userService: UserService,
-  ) {}
+  ) { }
 
   async create(createServiceOrderDto: CreateServiceOrderDto) {
     const { devices, client_id, technician_id, user_id } =
@@ -146,16 +148,52 @@ export class ServiceOrderService {
     );
   }
 
-  async findAll() {
-    return (
-      this.serviceOrderRepository
-        .createQueryBuilder('so')
-        .leftJoinAndSelect('so.client', 'client')
-        .leftJoinAndSelect('so.devices', 'devices')
-        .leftJoinAndSelect('so.technician','technician')
-        // .leftJoinAndSelect('devices.parts_and_services', 'parts_and_services')
-        .getMany()
-    );
+  async findAll(filter: FilterServiceOrder) {
+    // return (
+    //   this.serviceOrderRepository
+    //     .createQueryBuilder('so')
+    //     .leftJoinAndSelect('so.client', 'client')
+    //     .leftJoinAndSelect('so.devices', 'devices')
+    //     .leftJoinAndSelect('so.technician','technician')
+    //     // .leftJoinAndSelect('devices.parts_and_services', 'parts_and_services')
+    //     .getMany()
+    // );
+
+
+    const { sort, orderBy, search } = filter;
+
+    const queryBuilder = this.serviceOrderRepository.createQueryBuilder('so')
+      .leftJoinAndSelect('so.client', 'client')
+      .leftJoinAndSelect('so.devices', 'devices')
+      .leftJoinAndSelect('so.technician', 'technician')
+
+
+    if (search) {
+      queryBuilder.where(`client.client_name like :client_name`, { client_name: `%${search}%` });
+    }
+
+    if (orderBy == SortingType.ID) {
+      queryBuilder.orderBy(
+        'so.service_order_id',
+        `${sort === 'DESC' ? 'DESC' : 'ASC'}`,
+      );
+    } else {
+      queryBuilder.orderBy(
+        'client.client_name',
+        `${sort === 'DESC' ? 'DESC' : 'ASC'}`,
+      );
+    }
+
+    
+
+    const page = await paginate<ServiceOrder>(queryBuilder, filter);
+
+    page.links.first = page.links.first === '' ? '' : `${page.links.first}&sort=${sort}&orderBy=${orderBy}`;
+    page.links.previous = page.links.previous === '' ? '' : `${page.links.previous}&sort=${sort}&orderBy=${orderBy}`;
+    page.links.last = page.links.last === '' ? '' : `${page.links.last}&sort=${sort}&orderBy=${orderBy}`;
+    page.links.next = page.links.next === '' ? '' : `${page.links.next}&sort=${sort}&orderBy=${orderBy}`;
+
+    return page;
   }
 
   async getAllDataById(id: number) {
