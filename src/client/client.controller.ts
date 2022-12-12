@@ -21,7 +21,7 @@ import { UpdateClientDto } from './dto/update-client.dto';
 @UseGuards(PermissionGuard(AccessProfile.USER_AND_ADMIN))
 
 export class ClientController {
-  constructor(private readonly clientService: ClientService) {}
+  constructor(private readonly clientService: ClientService) { }
 
   @Post()
   async create(@Body() createClientDto: CreateClientDto) {
@@ -36,6 +36,13 @@ export class ClientController {
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.clientService.finfById(+id);
+  }
+
+  @Get('/cpf/:client_cpf')
+  async findClientByCpf(
+    @Param('client_cpf') client_cpf: string
+  ) {
+    return this.clientService.findByCpf(client_cpf)
   }
 
   @Put(':id')

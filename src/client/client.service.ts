@@ -1,25 +1,54 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { Client } from './entities/client.entity';
 import { Repository } from 'typeorm';
+import { CheckCpf } from '../common/validate.cpf';
+import { Validations } from 'src/common/validations';
+import { ValidType } from 'src/common/Enums';
 
 @Injectable()
 export class ClientService {
   constructor(
     @InjectRepository(Client)
     private readonly clientRepository: Repository<Client>,
-  ) {}
+  ) { }
 
   async create(createClientDto: CreateClientDto) {
-    const { client_name } = createClientDto;
+    const { client_name, client_cpf, client_phone } = createClientDto;
     const createClient = this.clientRepository.create(createClientDto);
 
+    const isCpf = CheckCpf.getInstance().isCpf(client_cpf)
+
+    if (!isCpf) {
+      throw new BadRequestException(`Número de cpf inválido`)
+    }
+
+    Validations.getInstance().validateWithRegex(
+      client_phone,
+      ValidType.IS_NUMBER
+    )
+
+    Validations.getInstance().verifyLength(
+      client_phone,
+      'phone number',
+      11,11
+    )
+
     createClient.client_name = client_name.toUpperCase();
+    createClient.client_cpf = client_cpf.replace(/[^\d]+/g, '')
     createClient.is_active = true
 
-    return this.clientRepository.save(createClient);
+    const clientSaved = await this.clientRepository.save(createClient).then(response => {
+      return response
+    }).catch(error => {
+      if (error.sqlMessage.indexOf('Duplicate entry') >= 0) {
+        throw new BadRequestException(`Cliente já cadastrado`)
+      }
+    })
+
+    return clientSaved
   }
 
   async findAll() {
@@ -40,6 +69,15 @@ export class ClientService {
       .where('client.client_name like :client_name', {
         client_name: `%${name}%`,
       });
+  }
+
+  async findByCpf(cpf: string): Promise<Client> {
+    return this.clientRepository.findOne({
+      where: {
+        client_cpf: cpf,
+        is_active: true
+      }
+    })
   }
 
   async update(id: number, updateClientDto: UpdateClientDto) {

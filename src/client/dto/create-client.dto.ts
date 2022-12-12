@@ -6,4 +6,7 @@ export class CreateClientDto {
 
   @ApiProperty()
   client_phone: string;
+
+  @ApiProperty()
+  client_cpf:string
 }

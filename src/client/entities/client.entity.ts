@@ -19,6 +19,9 @@ export class Client {
   @Column()
   client_phone: string;
 
+  @Column()
+  client_cpf:string
+
   @OneToMany(() => ServiceOrder, (serviceOrder) => serviceOrder.client)
   serviceOrders: ServiceOrder[];
 
