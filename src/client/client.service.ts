@@ -72,12 +72,19 @@ export class ClientService {
   }
 
   async findByCpf(cpf: string): Promise<Client> {
-    return this.clientRepository.findOne({
+    const clientSaved = await this.clientRepository.findOne({
       where: {
         client_cpf: cpf,
         is_active: true
       }
     })
+
+    if(!clientSaved){
+      throw new NotFoundException(`Client not found`)
+    }
+
+    return clientSaved
+
   }
 
   async update(id: number, updateClientDto: UpdateClientDto) {
