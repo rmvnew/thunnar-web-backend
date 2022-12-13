@@ -25,7 +25,7 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly profileService: ProfileService,
-  ) {}
+  ) { }
 
   async create(createUserDto: CreateUserDto) {
     const { user_password, user_name, user_email, user_profile_id, user_cpf } =
@@ -61,7 +61,7 @@ export class UserService {
       throw new BadRequestException(`email already registered`);
     }
 
-    if(!user_profile_id){
+    if (!user_profile_id) {
       throw new BadRequestException(`Profile not found`)
     }
 
@@ -80,7 +80,7 @@ export class UserService {
 
     return this.userRepository.save(currentUser);
   }
- 
+
   async findByEmail(userEmail: string): Promise<User> {
     return this.userRepository
       .createQueryBuilder('user')
@@ -102,8 +102,8 @@ export class UserService {
     const { sort, orderBy, user_name } = filter;
 
     const queryBuilder = this.userRepository.createQueryBuilder('user')
-    .leftJoinAndSelect('user.profile','profile')
-    
+      .leftJoinAndSelect('user.profile', 'profile')
+
 
     if (user_name) {
       queryBuilder.where(`user.user_name like :user_name`, {
@@ -151,7 +151,7 @@ export class UserService {
     return (
       this.userRepository
         .createQueryBuilder('inf')
-        .leftJoinAndSelect('inf.profile','profile')
+        .leftJoinAndSelect('inf.profile', 'profile')
         .where('inf.user_id = :user_id', { user_id: id })
         // .andWhere('inf.is_active = true')
         .getOne()
@@ -230,7 +230,7 @@ export class UserService {
   }
 
   async updateRefreshToken(id: number, refresh_token: string) {
-    
+
     Validations.getInstance().validateWithRegex(`${id}`, ValidType.IS_NUMBER);
 
     const user = await this.findById(id);
@@ -260,5 +260,9 @@ export class UserService {
     user.user_password = await hash(password);
 
     this.userRepository.save(user);
+  }
+
+  async getIdByName(name: string) {
+    return this.userRepository.query(`select user_id from tb_user where user_name = '${name}'`)
   }
 }

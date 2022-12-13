@@ -27,7 +27,7 @@ import { FilterMail } from './dto/filter.mail';
 @Controller('user')
 @ApiBearerAuth()
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Post()
   // @PublicRoute()
@@ -56,6 +56,14 @@ export class UserController {
     return this.userService.findById(+id);
   }
 
+  @Get('get-id/:name')
+  @UseGuards(PermissionGuard(AccessProfile.USER_AND_ADMIN))
+  async findIdByName(@Param('name') name: string) {
+    return this.userService.getIdByName(name)
+  }
+
+
+
   @Put(':id')
   @UseGuards(PermissionGuard(AccessProfile.ADMIN))
   async update(
@@ -77,4 +85,6 @@ export class UserController {
   async changePassword(@Param('cpf') cpf: string, @Param('pass') pass: string) {
     this.userService.changePassword(cpf, pass);
   }
+
+
 }
