@@ -10,7 +10,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { type } from 'os';
 import { Device } from 'src/device/entities/device.entity';
 import { CreateDeviceDto } from '../../device/dto/create-device.dto';
 import { Client } from 'src/client/entities/client.entity';
@@ -23,7 +22,7 @@ export class ServiceOrder {
   service_order_id: number;
 
   @Column({ nullable: false })
-  service_orde_number: number;
+  service_order_number: number;
 
   @Column()
   service_order_date: Date;

@@ -109,7 +109,7 @@ export class ServiceOrderService {
 
     const [{ max }] = res;
 
-    createOrder.service_orde_number = max === null ? 1 : max + 1;
+    createOrder.service_order_number = max === null ? 1 : max + 1;
 
     return this.serviceOrderRepository.save(createOrder);
   }
