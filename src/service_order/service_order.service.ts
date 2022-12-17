@@ -184,7 +184,7 @@ export class ServiceOrderService {
       );
     }
 
-    
+
 
     const page = await paginate<ServiceOrder>(queryBuilder, filter);
 
@@ -217,10 +217,55 @@ export class ServiceOrderService {
   }
 
   async update(id: number, updateServiceOrderDto: UpdateServiceOrderDto) {
+
+    const { devices } = updateServiceOrderDto
+
     const updateOrder = await this.serviceOrderRepository.preload({
       service_order_id: id,
       ...updateServiceOrderDto,
     });
+
+    if (devices.length > 0) {
+      let currentDevices = [];
+
+      for (let device of devices) {
+        const currentDevice = new Device();
+        currentDevice.device_brand = device.device_brand;
+        currentDevice.device_model = device.device_model;
+        currentDevice.device_serial_number = device.device_serial_number;
+        currentDevice.device_imei = device.device_imei;
+        currentDevice.device_problem_reported = device.device_problem_reported;
+        currentDevice.device_status = DeviceStatus.RECEIVED;
+
+        if (device.parts_and_services.length > 0) {
+          let currentPartsAndServices = [];
+
+          for (let pos of device.parts_and_services) {
+            const currentPos = new PartsAndService();
+            currentPos.is_active = true;
+            currentPos.pas_description = pos.pas_description;
+            currentPos.pas_quantity = pos.pas_quantity;
+            currentPos.pas_price = pos.pas_price;
+
+            const currentPosSaved = await this.partsAndServiceRepository.save(
+              currentPos,
+            );
+
+            currentPartsAndServices.push(currentPosSaved);
+          }
+
+          currentDevice.parts_and_services = currentPartsAndServices;
+        }
+
+        const currentDeviceSaved = await this.deviceRepository.save(
+          currentDevice,
+        );
+
+        currentDevices.push(currentDeviceSaved);
+      }
+
+      updateOrder.devices = currentDevices
+    }
 
     return this.serviceOrderRepository.save(updateOrder);
   }
