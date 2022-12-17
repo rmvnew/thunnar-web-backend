@@ -6,6 +6,7 @@ import { Device } from './entities/device.entity';
   imports: [TypeOrmModule.forFeature([Device])],
   controllers: [],
   providers: [],
+
   
 })
 export class DeviceModule {}

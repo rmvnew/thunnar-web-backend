@@ -149,16 +149,7 @@ export class ServiceOrderService {
   }
 
   async findAll(filter: FilterServiceOrder) {
-    // return (
-    //   this.serviceOrderRepository
-    //     .createQueryBuilder('so')
-    //     .leftJoinAndSelect('so.client', 'client')
-    //     .leftJoinAndSelect('so.devices', 'devices')
-    //     .leftJoinAndSelect('so.technician','technician')
-    //     // .leftJoinAndSelect('devices.parts_and_services', 'parts_and_services')
-    //     .getMany()
-    // );
-
+    
 
     const { sort, orderBy, search } = filter;
 
@@ -216,6 +207,8 @@ export class ServiceOrderService {
     });
   }
 
+
+
   async update(id: number, updateServiceOrderDto: UpdateServiceOrderDto) {
 
     const { devices } = updateServiceOrderDto
@@ -225,11 +218,25 @@ export class ServiceOrderService {
       ...updateServiceOrderDto,
     });
 
-    if (devices.length > 0) {
+    if (devices) {
+
+
+      console.log('Devices', devices);
+
       let currentDevices = [];
 
       for (let device of devices) {
-        const currentDevice = new Device();
+
+        let currentDevice: Device = new Device()
+
+        if (device.device_id != 0) {
+          currentDevice = await this.deviceRepository.preload({
+            device_id: device.device_id,
+            ...devices
+          })
+
+        }
+
         currentDevice.device_brand = device.device_brand;
         currentDevice.device_model = device.device_model;
         currentDevice.device_serial_number = device.device_serial_number;
@@ -237,18 +244,32 @@ export class ServiceOrderService {
         currentDevice.device_problem_reported = device.device_problem_reported;
         currentDevice.device_status = DeviceStatus.RECEIVED;
 
-        if (device.parts_and_services.length > 0) {
+        if (device.parts_and_services) {
+
+
+
           let currentPartsAndServices = [];
 
           for (let pos of device.parts_and_services) {
-            const currentPos = new PartsAndService();
+
+            let currentPos: PartsAndService = new PartsAndService();
+
+            if (pos.pas_id != 0) {
+
+              currentPos = await this.partsAndServiceRepository.preload({
+                pas_id: pos.pas_id,
+                ...device.parts_and_services
+              })
+
+            }
+
             currentPos.is_active = true;
             currentPos.pas_description = pos.pas_description;
             currentPos.pas_quantity = pos.pas_quantity;
             currentPos.pas_price = pos.pas_price;
 
             const currentPosSaved = await this.partsAndServiceRepository.save(
-              currentPos,
+              currentPos
             );
 
             currentPartsAndServices.push(currentPosSaved);
