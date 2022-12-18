@@ -149,14 +149,14 @@ export class ServiceOrderService {
   }
 
   async findAll(filter: FilterServiceOrder) {
-    
+
 
     const { sort, orderBy, search } = filter;
 
     const queryBuilder = this.serviceOrderRepository.createQueryBuilder('so')
       .leftJoinAndSelect('so.client', 'client')
-      .leftJoinAndSelect('so.devices', 'devices')
-      .leftJoinAndSelect('so.technician', 'technician')
+      // .leftJoinAndSelect('so.devices', 'devices')
+      // .leftJoinAndSelect('so.technician', 'technician')
 
 
     if (search) {
@@ -200,11 +200,23 @@ export class ServiceOrderService {
   }
 
   async findById(id: number) {
-    return this.serviceOrderRepository.findOne({
-      where: {
+    // return this.serviceOrderRepository.findOne({
+    //   where: {
+    //     service_order_id: id,
+    //   },
+    // });
+
+    return this.serviceOrderRepository
+      .createQueryBuilder('so')
+      .leftJoinAndSelect('so.technician', 'technician')
+      .leftJoinAndSelect('so.client', 'client')
+      .leftJoinAndSelect('so.devices', 'devices')
+      .leftJoinAndSelect('devices.parts_and_services', 'parts_and_services')
+      .where('so.service_order_id = :service_order_id', {
         service_order_id: id,
-      },
-    });
+      })
+      .getOne();
+
   }
 
 
@@ -221,7 +233,7 @@ export class ServiceOrderService {
     if (devices) {
 
 
-      console.log('Devices', devices);
+      // console.log('Devices', devices);
 
       let currentDevices = [];
 
@@ -247,10 +259,13 @@ export class ServiceOrderService {
         if (device.parts_and_services) {
 
 
+          // console.log('PAS: ',device.parts_and_services);
 
           let currentPartsAndServices = [];
 
           for (let pos of device.parts_and_services) {
+
+            console.log('Pos: ', pos);
 
             let currentPos: PartsAndService = new PartsAndService();
 
