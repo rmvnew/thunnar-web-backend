@@ -1,30 +1,67 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePartsAndServiceDto } from './dto/create-parts_and_service.dto';
 import { UpdatePartsAndServiceDto } from './dto/update-parts_and_service.dto';
 import { PartsAndService } from './entities/parts_and_service.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class PartsAndServicesService {
 
- 
-  create(createPartsAndServiceDto: CreatePartsAndServiceDto) {
-    return 'This action adds a new partsAndService';
+  constructor(
+    @InjectRepository(PartsAndService)
+    private readonly pasRepository: Repository<PartsAndService>
+  ) { }
+
+
+  // create(createPartsAndServiceDto: CreatePartsAndServiceDto) {
+  //   return 'This action adds a new partsAndService';
+  // }
+
+  async findAll() {
+    return this.pasRepository.find()
   }
 
-  findAll() {
-    return `This action returns all partsAndServices`;
+  async findById(id: number): Promise<PartsAndService> {
+    return this.pasRepository.findOne({
+      where: {
+        pas_id: id
+      }
+    })
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} partsAndService`;
+  async update(id: number, updatePartsAndServiceDto: UpdatePartsAndServiceDto) {
+
+    const isRegistered = await this.findById(id)
+
+    if (!isRegistered) {
+      throw new NotFoundException(`Item not found`)
+    }
+
+    const item = await this.pasRepository.preload({
+      pas_id: id,
+      ...updatePartsAndServiceDto
+    })
+
+    return this.pasRepository.save(item)
   }
 
-  update(id: number, updatePartsAndServiceDto: UpdatePartsAndServiceDto) {
-    return `This action updates a #${id} partsAndService`;
-  }
+  async remove(id: number) {
 
-  remove(id: number) {
-    return `This action removes a #${id} partsAndService`;
+
+    const isRegistered = await this.findById(id)
+
+    if (!isRegistered) {
+      throw new NotFoundException(`Item not found`)
+    }
+
+
+    await this.pasRepository.createQueryBuilder('pas')
+      .delete()
+      .from(PartsAndService)
+      .where('pas_id = :pas_id', { pas_id: id })
+      .execute()
+
+
   }
 }

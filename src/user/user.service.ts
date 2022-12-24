@@ -100,6 +100,7 @@ export class UserService {
 
   async findAll(filter: FilterUser): Promise<Pagination<User>> {
     const { sort, orderBy, user_name } = filter;
+    let element = ""
 
     const queryBuilder = this.userRepository.createQueryBuilder('user')
       .leftJoinAndSelect('user.profile', 'profile')
@@ -127,22 +128,10 @@ export class UserService {
 
     const page = await paginate<User>(queryBuilder, filter);
 
-    page.links.first =
-      page.links.first === ''
-        ? ''
-        : `${page.links.first}&sort=${sort}&orderBy=${orderBy}`;
-    page.links.previous =
-      page.links.previous === ''
-        ? ''
-        : `${page.links.previous}&sort=${sort}&orderBy=${orderBy}`;
-    page.links.last =
-      page.links.last === ''
-        ? ''
-        : `${page.links.last}&sort=${sort}&orderBy=${orderBy}`;
-    page.links.next =
-      page.links.next === ''
-        ? ''
-        : `${page.links.next}&sort=${sort}&orderBy=${orderBy}`;
+    page.links.first = page.links.first === '' ? '' : `${page.links.first}&sort=${sort}&orderBy=${orderBy}`;
+    page.links.previous = page.links.previous === '' ? '' : `${page.links.previous}&sort=${sort}&orderBy=${orderBy}`;
+    page.links.last = page.links.last === '' ? '' : `${page.links.last}&sort=${sort}&orderBy=${orderBy}`;
+    page.links.next = page.links.next === '' ? '' : `${page.links.next}&sort=${sort}&orderBy=${orderBy}`;
 
     return page;
   }
