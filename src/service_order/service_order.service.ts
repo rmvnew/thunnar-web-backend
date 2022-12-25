@@ -155,8 +155,8 @@ export class ServiceOrderService {
 
     const queryBuilder = this.serviceOrderRepository.createQueryBuilder('so')
       .leftJoinAndSelect('so.client', 'client')
-      // .leftJoinAndSelect('so.devices', 'devices')
-      // .leftJoinAndSelect('so.technician', 'technician')
+    // .leftJoinAndSelect('so.devices', 'devices')
+    // .leftJoinAndSelect('so.technician', 'technician')
 
 
     if (search) {
@@ -200,11 +200,6 @@ export class ServiceOrderService {
   }
 
   async findById(id: number) {
-    // return this.serviceOrderRepository.findOne({
-    //   where: {
-    //     service_order_id: id,
-    //   },
-    // });
 
     return this.serviceOrderRepository
       .createQueryBuilder('so')
@@ -265,7 +260,7 @@ export class ServiceOrderService {
 
           for (let pos of device.parts_and_services) {
 
-            console.log('Pos: ', pos);
+            // console.log('Pos: ', pos);
 
             let currentPos: PartsAndService = new PartsAndService();
 
@@ -305,4 +300,21 @@ export class ServiceOrderService {
 
     return this.serviceOrderRepository.save(updateOrder);
   }
+
+
+  async changeStatusOrder(id: number, status: OrderStatus) {
+
+
+    const isRegistered = await this.findById(id)
+
+    if (!isRegistered) {
+      throw new NotFoundException(`Order not found`)
+    }
+
+    isRegistered.service_order_status = status
+
+    await this.serviceOrderRepository.save(isRegistered)
+
+  }
+
 }

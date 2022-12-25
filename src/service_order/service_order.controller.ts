@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, UseGuards, Query, Patch } from '@nestjs/common';
 import { ServiceOrderService } from './service_order.service';
 import { CreateServiceOrderDto } from './dto/create-service_order.dto';
 import { UpdateServiceOrderDto } from './dto/update-service_order.dto';
@@ -8,6 +8,7 @@ import { PermissionGuard } from 'src/auth/shared/guards/permission.guard';
 import AccessProfile from 'src/auth/enums/permission.type';
 import { FilterServiceOrder } from './dto/service-order.filter';
 import { getServiceOrderPath } from '../common/routes.path';
+import { OrderStatus } from 'src/common/Enums';
 
 @ApiTags('Service Order')
 @Controller('service-order')
@@ -50,5 +51,13 @@ export class ServiceOrderController {
     @Body() updateServiceOrderDto: UpdateServiceOrderDto,
   ) {
     return this.serviceOrderService.update(+id, updateServiceOrderDto);
+  }
+
+  @Patch('/change-status/:id/:orderStatus')
+  async changeStatusorder(
+    @Param('id') id: number,
+    @Param('orderStatus') orderStatus: OrderStatus,
+  ) {
+    this.serviceOrderService.changeStatusOrder(id, orderStatus)
   }
 }
