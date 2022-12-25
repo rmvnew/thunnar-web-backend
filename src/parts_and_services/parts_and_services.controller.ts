@@ -1,6 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Body, Param, Delete, UseGuards, Put } from '@nestjs/common';
 import { PartsAndServicesService } from './parts_and_services.service';
-import { CreatePartsAndServiceDto } from './dto/create-parts_and_service.dto';
 import { UpdatePartsAndServiceDto } from './dto/update-parts_and_service.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { PermissionGuard } from 'src/auth/shared/guards/permission.guard';
@@ -29,7 +28,7 @@ export class PartsAndServicesController {
   //   return this.partsAndServicesService.findOne(+id);
   // }
 
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id') id: string, @Body() updatePartsAndServiceDto: UpdatePartsAndServiceDto) {
     return this.partsAndServicesService.update(+id, updatePartsAndServiceDto);
   }
