@@ -176,6 +176,7 @@ export class ServiceOrderService {
     }
 
 
+    queryBuilder.andWhere('so.is_active <> false')
 
     const page = await paginate<ServiceOrder>(queryBuilder, filter);
 
