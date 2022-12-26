@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, UseGuards, Query, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, UseGuards, Query, Patch, Delete } from '@nestjs/common';
 import { ServiceOrderService } from './service_order.service';
 import { CreateServiceOrderDto } from './dto/create-service_order.dto';
 import { UpdateServiceOrderDto } from './dto/update-service_order.dto';
@@ -60,4 +60,13 @@ export class ServiceOrderController {
   ) {
     this.serviceOrderService.changeStatusOrder(id, orderStatus)
   }
+
+
+  @Delete(':id')
+  async deleteOrder(
+    @Param('id') id: number
+  ) {
+    return this.serviceOrderService.deleteOrder(id)
+  }
+
 }

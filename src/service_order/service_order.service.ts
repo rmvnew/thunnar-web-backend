@@ -318,4 +318,21 @@ export class ServiceOrderService {
 
   }
 
+  async deleteOrder(id: number) {
+
+    const isRegistered = await this.findById(id)
+
+    if (!isRegistered) {
+      throw new NotFoundException(`Order not found`)
+    }
+
+
+    isRegistered.is_active = false
+
+    return this.serviceOrderRepository.save(isRegistered)
+
+
+
+  }
+
 }
