@@ -52,7 +52,7 @@ export class ServiceOrderController {
   ) {
     return this.serviceOrderService.update(+id, updateServiceOrderDto);
   }
-
+ 
   @Patch('/change-status/:id/:orderStatus')
   async changeStatusorder(
     @Param('id') id: number,

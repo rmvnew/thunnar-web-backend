@@ -8,7 +8,6 @@ import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { sendMail } from 'src/common/email';
 import { SortingType, ValidType } from 'src/common/Enums';
 import { hash } from 'src/common/hash';
-
 import { Validations } from 'src/common/validations';
 import { ProfileService } from 'src/profile/profile.service';
 import { Repository } from 'typeorm';

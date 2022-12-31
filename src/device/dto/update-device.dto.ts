@@ -21,6 +21,9 @@ export class UpdateDeviceDto {
     @ApiProperty()
     device_problem_reported: string;
 
+    @ApiProperty()
+    device_problem_detected: string;
+
     @ApiProperty({ type: [CreatePartsAndServiceDto], required: false })
     parts_and_services: CreatePartsAndServiceDto[];
 }
