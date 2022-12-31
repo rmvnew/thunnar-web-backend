@@ -250,6 +250,7 @@ export class ServiceOrderService {
         currentDevice.device_serial_number = device.device_serial_number;
         currentDevice.device_imei = device.device_imei;
         currentDevice.device_problem_reported = device.device_problem_reported;
+        currentDevice.device_problem_detected = device.device_problem_detected;
         currentDevice.device_status = DeviceStatus.RECEIVED;
 
         if (device.parts_and_services) {
