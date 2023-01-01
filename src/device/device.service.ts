@@ -10,7 +10,7 @@ export class DeviceService {
   constructor(
     @InjectRepository(Device)
     private readonly deviceRepository: Repository<Device>,
-  ) {}
+  ) { }
 
   async create(createDeviceDto: CreateDeviceDto) {
     const { device_brand, device_model, device_serial_number } =
@@ -44,7 +44,13 @@ export class DeviceService {
     return `This action updates a #${id} device`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} device`;
+  async remove(id: number) {
+
+    const device = this.deviceRepository.createQueryBuilder('dev')
+      .delete()
+      .from(Device)
+      .where('device_id = :device_id', { device_id: id })
+      .execute()
+
   }
 }
