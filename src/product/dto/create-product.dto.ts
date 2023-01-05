@@ -27,13 +27,13 @@ export class CreateProductDto {
     product_category_id:number
 
     @ApiProperty({ required: false })
-    product_price: number
+    product_purchase_price: number
     
     @ApiProperty({ required: false })
     invoice_id: number
 
     @ApiProperty({ required: false })
-    product_price_buy: number
+    product_sale_price: number
 
     
 

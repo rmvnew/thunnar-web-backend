@@ -45,4 +45,11 @@ export class ProductController {
   async remove(@Param('id') id: string) {
     return this.productService.remove(+id);
   }
+
+
+  @Post('/call')
+  async callOperation(){
+    this.productService.operation()
+  }
+
 }

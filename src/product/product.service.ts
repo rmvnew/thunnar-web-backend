@@ -8,6 +8,9 @@ import { Repository } from 'typeorm';
 import { SortingType } from 'src/common/Enums';
 import { paginate } from 'nestjs-typeorm-paginate';
 import { InvoiceService } from '../invoice/invoice.service';
+import { products } from './products';
+
+
 
 @Injectable()
 export class ProductService {
@@ -32,7 +35,7 @@ export class ProductService {
 
       let invoices = []
       const currentInvoice = await this.invoiceService.findById(invoice_id)
-      
+
       if (!currentInvoice) {
         throw new NotFoundException(`Invoice not found`)
       }
@@ -46,7 +49,7 @@ export class ProductService {
 
     createProduct.is_active = true
 
-    
+
 
     return this.productRepository.save(createProduct)
 
@@ -97,21 +100,21 @@ export class ProductService {
   async update(id: number, updateProductDto: UpdateProductDto) {
 
 
-       
-    const { product_name, product_location,invoice_id } = updateProductDto
-    
-    
-    
+
+    const { product_name, product_location, invoice_id } = updateProductDto
+
+
+
     const isRegistered = await this.findById(id)
 
-   
-    
-    
+
+
+
     if (!isRegistered) {
       throw new NotFoundException(`Produto não encontrado!`)
     }
-    
-    
+
+
 
     const createUpdate = await this.productRepository.preload({
       product_id: id,
@@ -122,7 +125,7 @@ export class ProductService {
 
       let invoices = []
       const currentInvoice = await this.invoiceService.findById(invoice_id)
-      
+
       if (!currentInvoice) {
         throw new NotFoundException(`Invoice not found`)
       }
@@ -140,10 +143,10 @@ export class ProductService {
       createUpdate.product_location = product_location.toUpperCase()
     }
 
-    
+
     return this.productRepository.save(createUpdate)
 
-    
+
   }
 
 
@@ -161,4 +164,36 @@ export class ProductService {
 
     return this.productRepository.save(isRegistered)
   }
+
+
+
+  async operation() {
+
+    products.forEach(data => {
+
+      const prod: CreateProductDto = {
+        invoice_id: data.id,
+        product_name: data.name,
+        product_barcode: `${data.barcode}`,
+        product_code: `${data.code}`,
+        product_location: data.location,
+        product_quantity: data.quantity,
+        product_quantity_minimal: data.minimal_quantity,
+        product_category_id: data.category,
+        product_purchase_price: data.product_pryce,
+        product_sale_price: data.product_pryce_buy
+
+      }
+
+      const create = this.productRepository.create(prod)
+      create.is_active = true
+      
+
+      this.productRepository.save(create)
+
+
+    })
+
+  }
+
 }

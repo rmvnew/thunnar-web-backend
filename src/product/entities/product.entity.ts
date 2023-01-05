@@ -28,10 +28,10 @@ export class Product {
     product_quantity_minimal: number
 
     @Column({ type: 'decimal', precision: 8, scale: 2, default: 0 })
-    product_price: number
+    product_purchase_price: number
 
     @Column({ type: 'decimal', precision: 8, scale: 2, default: 0, nullable: true })
-    product_price_buy: number
+    product_sale_price: number
 
     @Column()
     product_category_id: number
