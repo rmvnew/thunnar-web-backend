@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger"
+import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateUserDto {
     @ApiProperty()
@@ -14,5 +14,5 @@ export class CreateUserDto {
     user_cpf: string;
 
     @ApiProperty()
-    user_profile_id: number
+    user_profile_id: string
 }

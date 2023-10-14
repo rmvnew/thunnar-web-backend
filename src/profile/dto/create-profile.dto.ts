@@ -1,6 +1,10 @@
-import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateProfileDto {
-    @ApiProperty()
+
+
+    profile_id: string
+
     profile_name: string
+
+
 }

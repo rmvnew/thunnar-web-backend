@@ -3,7 +3,7 @@ export enum VerifyCredentials {
     verify_password = 'password'
 }
 
-export enum SqlType{
+export enum SqlType {
     SQL = 'SQL',
     NORMAL = 'NORMAL',
     BR = 'BR'
@@ -37,36 +37,38 @@ export enum ValidType {
 
 }
 
-export enum ObjectSize{
+export enum ObjectSize {
     INTEGER = 2147483646,
     DEFAULT_DAYS = 35
 }
 
-export enum DateOperation{
+export enum DateOperation {
     ADD = 'ADD',
     REMOVE = 'REMOVE'
 }
 
-export enum TypeEmail{
-    CREATE  = 'CREATE',
+export enum TypeEmail {
+    CREATE = 'CREATE',
     RESET = 'RESET'
 }
 
 
-export enum OrderStatus{
+export enum OrderStatus {
     CREATED = 'CREATED',
     UNDER_ANALYSIS = 'UNDER_ANALYSIS',
     WAITING_FOR_APPROVAL = 'WAITING_FOR_APPROVAL',
     IN_PROGRESS = 'IN_PROGRESS',
-    FINISHED ='FINISHED',
+    FINISHED = 'FINISHED',
     CANCELED = 'CANCELED'
 }
 
-export enum DeviceStatus{
+export enum DeviceStatus {
     RECEIVED = 'RECEIVED',
     UNDER_ANALYSIS = 'UNDER_ANALYSIS',
     WAITING_FOR_APPROVAL = 'WAITING_FOR_APPROVAL',
     IN_PROGRESS = 'IN_PROGRESS',
-    FIXED_UP ='FIXED_UP',
+    FIXED_UP = 'FIXED_UP',
     RETURNED = 'RETURNED'
 }
+
+

@@ -1,9 +1,9 @@
-import { Controller, Get, Body, Param, Delete, UseGuards, Put } from '@nestjs/common';
-import { PartsAndServicesService } from './parts_and_services.service';
-import { UpdatePartsAndServiceDto } from './dto/update-parts_and_service.dto';
+import { Body, Controller, Delete, Get, Param, Put, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AccessProfile } from 'src/auth/enums/permission.type';
 import { PermissionGuard } from 'src/auth/shared/guards/permission.guard';
-import AccessProfile from 'src/auth/enums/permission.type';
+import { UpdatePartsAndServiceDto } from './dto/update-parts_and_service.dto';
+import { PartsAndServicesService } from './parts_and_services.service';
 
 @Controller('parts-and-services')
 @ApiTags('PAS')
@@ -11,7 +11,7 @@ import AccessProfile from 'src/auth/enums/permission.type';
 @UseGuards(PermissionGuard(AccessProfile.USER_AND_ADMIN))
 
 export class PartsAndServicesController {
-  constructor(private readonly partsAndServicesService: PartsAndServicesService) {}
+  constructor(private readonly partsAndServicesService: PartsAndServicesService) { }
 
   // @Post()
   // create(@Body() createPartsAndServiceDto: CreatePartsAndServiceDto) {

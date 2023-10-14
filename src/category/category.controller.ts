@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import AccessProfile from 'src/auth/enums/permission.type';
+import { AccessProfile } from 'src/auth/enums/permission.type';
 import { PermissionGuard } from 'src/auth/shared/guards/permission.guard';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -28,14 +28,14 @@ export class CategoryController {
 
   @Get(':id')
   async findOne(
-    @Param('id') id: string):Promise<Category> {
+    @Param('id') id: string): Promise<Category> {
     return this.categoryService.findById(+id);
   }
 
   @Put(':id')
   async update(
-    @Param('id') id: string, 
-    @Body() updateCategoryDto: UpdateCategoryDto):Promise<Category> {
+    @Param('id') id: string,
+    @Body() updateCategoryDto: UpdateCategoryDto): Promise<Category> {
     return this.categoryService.update(+id, updateCategoryDto);
   }
 

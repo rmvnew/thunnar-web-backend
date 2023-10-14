@@ -1,22 +1,21 @@
 import {
+  Body,
   Controller,
   Get,
-  Post,
-  Body,
   Param,
+  Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { SaleService } from './sale.service';
-import { CreateSaleDto } from './dto/create-sale.dto';
-import { UpdateSaleDto } from './dto/update-sale.dto';
-import { FilterSale } from './dto/filter.sale';
-import { Pagination } from 'nestjs-typeorm-paginate';
-import { Sale } from './entities/sale.entity';
-import { getSalePath } from '../common/routes.path';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Pagination } from 'nestjs-typeorm-paginate';
+import { AccessProfile } from 'src/auth/enums/permission.type';
 import { PermissionGuard } from 'src/auth/shared/guards/permission.guard';
-import AccessProfile from 'src/auth/enums/permission.type';
+import { getSalePath } from '../common/routes.path';
+import { CreateSaleDto } from './dto/create-sale.dto';
+import { FilterSale } from './dto/filter.sale';
+import { Sale } from './entities/sale.entity';
+import { SaleService } from './sale.service';
 
 @ApiTags('Sale')
 @Controller('sale')
@@ -24,7 +23,7 @@ import AccessProfile from 'src/auth/enums/permission.type';
 @UseGuards(PermissionGuard(AccessProfile.USER_AND_ADMIN))
 
 export class SaleController {
-  constructor(private readonly saleService: SaleService) {}
+  constructor(private readonly saleService: SaleService) { }
 
   @Post()
   create(@Body() createSaleDto: CreateSaleDto) {
@@ -43,5 +42,5 @@ export class SaleController {
     return this.saleService.findById(+id);
   }
 
-  
+
 }

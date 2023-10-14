@@ -3,12 +3,12 @@ https://docs.nestjs.com/providers#services
 */
 
 import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
-import * as bcrypt from 'bcrypt'
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
+import { hash, isMatchHash } from 'src/common/hash';
 import { UserService } from 'src/user/user.service';
 import { LoginDTO } from '../dto/login.dto';
-import { ConfigService } from '@nestjs/config';
-import { hash, isMatchHash } from 'src/common/hash';
 import Tokens from '../interfaces/tokens';
 
 
@@ -65,7 +65,7 @@ export class AuthService {
         }
     }
 
-    async refreshToken(id: number, refreshToken: string) {
+    async refreshToken(id: string, refreshToken: string) {
 
         const user = await this.userService.findById(id)
 
@@ -101,7 +101,7 @@ export class AuthService {
     }
 
 
-    async removeRefreshToken(id: number): Promise<any> {
+    async removeRefreshToken(id: string): Promise<any> {
         const user = await this.userService.findById(id)
 
         if (!user) {
@@ -111,7 +111,7 @@ export class AuthService {
         await this.userService.updateRefreshToken(user.user_id, null);
     }
 
-    async getTokens(id: number, name: string, profile_id: number): Promise<Tokens> {
+    async getTokens(id: string, name: string, profile_id: string): Promise<Tokens> {
 
         const [access_token, refresh_token] = await Promise.all([
             this.jwtService.signAsync({
@@ -142,7 +142,7 @@ export class AuthService {
     }
 
 
-    async validateToken(id: number, token: string) {
+    async validateToken(id: string, token: string) {
 
 
         const user = await this.userService.findById(id)

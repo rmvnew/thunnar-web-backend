@@ -1,25 +1,33 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { paginate, Pagination } from 'nestjs-typeorm-paginate';
-import { sendMail } from 'src/common/email';
+import { Pagination, paginate } from 'nestjs-typeorm-paginate';
 import { SortingType, ValidType } from 'src/common/Enums';
+import { sendMail } from 'src/common/email';
 import { hash } from 'src/common/hash';
 import { Validations } from 'src/common/validations';
 import { ProfileService } from 'src/profile/profile.service';
 import { Repository } from 'typeorm';
+import { CheckCpf } from '../common/validate.cpf';
 import { CreateUserDto } from './dto/create-user.dto';
 import { FilterMail } from './dto/filter.mail';
 import { FilterUser } from './dto/filter.user';
+import { CreateSysAdminDto } from './dto/sysadmin.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { CheckCpf } from '../common/validate.cpf';
 
 @Injectable()
 export class UserService {
+
+
+
+  private readonly logger = new Logger(UserService.name)
+
+
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -27,6 +35,7 @@ export class UserService {
   ) { }
 
   async create(createUserDto: CreateUserDto) {
+
     const { user_password, user_name, user_email, user_profile_id, user_cpf } =
       createUserDto;
 
@@ -80,6 +89,18 @@ export class UserService {
     return this.userRepository.save(currentUser);
   }
 
+
+  async createSysAdmin(user: CreateSysAdminDto) {
+
+    const sysadmin = this.userRepository.create(user)
+
+    sysadmin.is_active = true
+    sysadmin.user_first_access = true
+    sysadmin.user_password = await hash(user.user_password)
+
+    return this.userRepository.save(sysadmin)
+  }
+
   async findByEmail(userEmail: string): Promise<User> {
     return this.userRepository
       .createQueryBuilder('user')
@@ -123,7 +144,7 @@ export class UserService {
       );
     }
 
-    queryBuilder.andWhere('user.is_active <> false');
+    // queryBuilder.andWhere('user.is_active <> false');
 
     const page = await paginate<User>(queryBuilder, filter);
 
@@ -135,7 +156,7 @@ export class UserService {
     return page;
   }
 
-  async findById(id: number): Promise<User> {
+  async findById(id: string): Promise<User> {
     return (
       this.userRepository
         .createQueryBuilder('inf')
@@ -158,7 +179,7 @@ export class UserService {
     });
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     const isRegistered = await this.findById(id);
 
     if (!isRegistered) {
@@ -203,7 +224,8 @@ export class UserService {
     return this.userRepository.save(currentUser);
   }
 
-  async changeStatus(id: number): Promise<User> {
+  async changeStatus(id: string): Promise<User> {
+
     const isRegistered = await this.findById(id);
 
     if (!isRegistered) {
@@ -217,7 +239,7 @@ export class UserService {
     return this.userRepository.save(isRegistered);
   }
 
-  async updateRefreshToken(id: number, refresh_token: string) {
+  async updateRefreshToken(id: string, refresh_token: string) {
 
     Validations.getInstance().validateWithRegex(`${id}`, ValidType.IS_NUMBER);
 
@@ -253,4 +275,28 @@ export class UserService {
   async getIdByName(name: string) {
     return this.userRepository.query(`select user_id from tb_user where user_name = '${name}'`)
   }
+
+  async haveAdmin(name: string) {
+
+    try {
+
+      const admin = await this.userRepository.findOne({
+        where: {
+          user_name: name.toUpperCase()
+        }
+      })
+
+      if (admin) {
+        return true
+      } else {
+        return false
+      }
+
+    } catch (error) {
+      this.logger.error(`haveAdmin error: ${error.message}`, error.stack)
+      throw error
+    }
+
+  }
+
 }

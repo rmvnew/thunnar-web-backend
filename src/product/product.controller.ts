@@ -1,12 +1,12 @@
-import { FilterProduct } from './dto/filter.product';
-import { Controller, Get, Post, Body, Param, Delete, Query, Put, UseGuards } from '@nestjs/common';
-import { ProductService } from './product.service';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
-import { getProductPath } from 'src/common/routes.path';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AccessProfile } from 'src/auth/enums/permission.type';
 import { PermissionGuard } from 'src/auth/shared/guards/permission.guard';
-import AccessProfile from 'src/auth/enums/permission.type';
+import { getProductPath } from 'src/common/routes.path';
+import { CreateProductDto } from './dto/create-product.dto';
+import { FilterProduct } from './dto/filter.product';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { ProductService } from './product.service';
 
 @ApiTags("Product")
 @Controller('product')
@@ -48,7 +48,7 @@ export class ProductController {
 
 
   @Post('/call')
-  async callOperation(){
+  async callOperation() {
     this.productService.operation()
   }
 

@@ -11,5 +11,5 @@ export class UpdateUserDto {
   user_cpf: string;
 
   @ApiProperty()
-  user_profile_id: number;
+  user_profile_id: string;
 }

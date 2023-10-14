@@ -1,25 +1,25 @@
 import { Module } from '@nestjs/common';
 
-import { DatabaseModule } from './config/database/database.module';
-import { SwaggerModule } from '@nestjs/swagger';
-import { AuthModule } from './auth/auth.module';
-import { APP_GUARD } from '@nestjs/core';
-import { JwtAuthGuard } from './auth/shared/guards/jwt-auth.guard';
-import { ScheduleModule } from '@nestjs/schedule';
-import { UserModule } from './user/user.module';
-import { ProfileModule } from './profile/profile.module';
-import { ConfigureModule } from './config/environments/config.module';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { ScheduleModule } from '@nestjs/schedule';
+import { SwaggerModule } from '@nestjs/swagger';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
+import { JwtAuthGuard } from './auth/shared/guards/jwt-auth.guard';
 import { CategoryModule } from './category/category.module';
 import { ClientModule } from './client/client.module';
+import { Bootstrap } from './config/bootstrap';
+import { ConfigureModule } from './config/environments/config.module';
 import { DeviceModule } from './device/device.module';
+import { InvoiceModule } from './invoice/invoice.module';
 import { PartsAndServicesModule } from './parts_and_services/parts_and_services.module';
 import { ProductModule } from './product/product.module';
+import { ProfileModule } from './profile/profile.module';
 import { SaleModule } from './sale/sale.module';
 import { ServiceOrderModule } from './service_order/service_order.module';
 import { TechnicianModule } from './technician/technician.module';
-import { InvoiceModule } from './invoice/invoice.module';
+import { UserModule } from './user/user.module';
 
 
 
@@ -52,11 +52,11 @@ import { InvoiceModule } from './invoice/invoice.module';
     ServiceOrderModule,
     TechnicianModule,
     InvoiceModule
-    
+
   ],
   controllers: [],
   providers: [
-    
+    Bootstrap,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,

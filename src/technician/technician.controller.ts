@@ -1,19 +1,19 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Post,
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { TechnicianService } from './technician.service';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AccessProfile } from 'src/auth/enums/permission.type';
+import { PermissionGuard } from 'src/auth/shared/guards/permission.guard';
 import { CreateTechnicianDto } from './dto/create-technician.dto';
 import { UpdateTechnicianDto } from './dto/update-technician.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { PermissionGuard } from 'src/auth/shared/guards/permission.guard';
-import AccessProfile from 'src/auth/enums/permission.type';
+import { TechnicianService } from './technician.service';
 
 @ApiTags('Technician')
 @Controller('technician')
@@ -22,7 +22,7 @@ import AccessProfile from 'src/auth/enums/permission.type';
 
 
 export class TechnicianController {
-  constructor(private readonly technicianService: TechnicianService) {}
+  constructor(private readonly technicianService: TechnicianService) { }
 
   @Post()
   async create(@Body() createTechnicianDto: CreateTechnicianDto) {

@@ -14,8 +14,8 @@ import {
 
 @Entity('tb_user')
 export class User {
-  @PrimaryGeneratedColumn()
-  user_id: number;
+  @PrimaryGeneratedColumn('uuid')
+  user_id: string;
 
   @Column()
   user_name: string;
@@ -26,14 +26,14 @@ export class User {
   @Column()
   user_password: string;
 
-  @Column()
-  user_cpf: string;
+  @Column({ nullable: true })
+  user_cpf?: string;
 
   @Column({ nullable: true })
   user_refresh_token: string;
 
   @Column()
-  user_profile_id: number;
+  user_profile_id: string;
 
   @Column()
   user_first_access: boolean;

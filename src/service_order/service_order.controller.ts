@@ -1,14 +1,16 @@
-import { Controller, Get, Post, Body, Param, Put, UseGuards, Query, Patch, Delete } from '@nestjs/common';
-import { ServiceOrderService } from './service_order.service';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { PermissionGuard } from 'src/auth/shared/guards/permission.guard';
+import { CreatePartsAndServiceDto } from '../parts_and_services/dto/create-parts_and_service.dto';
 import { CreateServiceOrderDto } from './dto/create-service_order.dto';
 import { UpdateServiceOrderDto } from './dto/update-service_order.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { CreatePartsAndServiceDto } from '../parts_and_services/dto/create-parts_and_service.dto';
-import { PermissionGuard } from 'src/auth/shared/guards/permission.guard';
-import AccessProfile from 'src/auth/enums/permission.type';
-import { FilterServiceOrder } from './dto/service-order.filter';
-import { getServiceOrderPath } from '../common/routes.path';
+import { ServiceOrderService } from './service_order.service';
+
+import { AccessProfile } from 'src/auth/enums/permission.type';
 import { OrderStatus } from 'src/common/Enums';
+import { getServiceOrderPath } from '../common/routes.path';
+import { FilterServiceOrder } from './dto/service-order.filter';
+
 
 @ApiTags('Service Order')
 @Controller('service-order')
@@ -52,7 +54,7 @@ export class ServiceOrderController {
   ) {
     return this.serviceOrderService.update(+id, updateServiceOrderDto);
   }
- 
+
   @Patch('/change-status/:id/:orderStatus')
   async changeStatusorder(
     @Param('id') id: number,

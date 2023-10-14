@@ -1,11 +1,17 @@
-const DEFAULT_ADMIN_VALUE = 1;
-const DEFAULT_USER_VALUE = 2;
+import { ProfileValueService } from "src/common/profile.values";
 
-let AccessProfile = {
+export class AccessProfile {
+    static profileValues = new ProfileValueService();
 
-    USER: DEFAULT_USER_VALUE,
-    USER_AND_ADMIN: [DEFAULT_USER_VALUE, DEFAULT_ADMIN_VALUE],
-    ADMIN: DEFAULT_ADMIN_VALUE,
-
+    static USER = AccessProfile.profileValues.USER_VALUE;
+    static ADMIN = AccessProfile.profileValues.ADMIN_VALUE;
+    static OPERATOR = AccessProfile.profileValues.OPERATOR_VALUE;
+    static USER_AND_ADMIN = [
+        AccessProfile.profileValues.USER_VALUE,
+        AccessProfile.profileValues.ADMIN_VALUE];
+    static ALL = [
+        AccessProfile.profileValues.USER_VALUE,
+        AccessProfile.profileValues.ADMIN_VALUE,
+        AccessProfile.profileValues.OPERATOR_VALUE
+    ];
 }
-export default AccessProfile;

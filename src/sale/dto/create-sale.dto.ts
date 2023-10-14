@@ -3,11 +3,11 @@ import { Product } from 'src/product/entities/product.entity';
 
 export class CreateSaleDto {
   @ApiProperty()
-  user_id: number;
+  user_id: string;
 
   @ApiProperty()
   sale_value: number;
 
-  @ApiProperty({type:[Product]})
+  @ApiProperty({ type: [Product] })
   products: Product[];
 }
